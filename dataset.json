@@ -1,0 +1,11 @@
+[
+  {
+    "image": "images/0001.jpg",
+    "texts": [
+      {
+        "user": "What is in the image?\nChoices: A. Cat B. Dog",
+        "assistant": "Answer: B",
+      }
+    ]
+  }
+]
