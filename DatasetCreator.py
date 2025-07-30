@@ -82,7 +82,7 @@ def main():
     
     with open(DIALOG, 'r', encoding='utf-8') as f:
         data = json.load(f)
-
+    """
     path = 'E:/Drone_dataset/RFUAV/augmentation_exp2_allDrone/or_image/matlab/'
     for drone in DRONES:
 
@@ -96,6 +96,8 @@ def main():
             build_vqa_json(img, DATASET, data[drone]['analysis_Q'], data[drone]['analysis_A'])
             build_vqa_json(img, DATASET, data[drone]['Type_Q'], data[drone]['Type_A'])
             build_vqa_json(img, DATASET, data['SNR']['High_Q'], data['SNR']['High_A'])
+    """
+
 
     path = 'E:/Drone_dataset/RFUAV/augmentation_exp1_MethodSelect/benchmark_or/'
     for drone in ['DJI MINI 3', 'DJI AVATA2', 'DJI FPV COMBO', 'DJI MAVIC3 PRO', 'DJI MINI4 PRO']:
@@ -105,14 +107,14 @@ def main():
         for snr in snrs:
             if int(snr[:-2]) >= 10:
                 snr_level = 'High_A'
-            elif int(snr[:-2]) < 10 and int(snr_level) > -10:
+            elif int(snr[:-2]) < 10 and int(snr[:-2]) > -10:
                 snr_level = 'Middle_A'
             elif int(snr[:-2]) <= -10:
                 snr_level = 'Low_A'
             imges = os.listdir(os.path.join(path, drone, snr, 'parula', '1024'))
             imgs = [os.path.join(path, drone, snr, 'parula', '1024', i) for i in imges if i.endswith('.jpg')]
-            imgs = random.shuffle(imgs)[:NUM_SNRS]
-            for img in imgs:
+            random.shuffle(imgs)
+            for img in imgs[:NUM_SNRS]:
                 build_vqa_json(img, DATASET, data[drone]['analysis_Q'], data[drone]['analysis_A'])
                 build_vqa_json(img, DATASET, data[drone]['Type_Q'], data[drone]['Type_A'])
                 build_vqa_json(img, DATASET, data['SNR']['High_Q'], data['SNR'][snr_level])
