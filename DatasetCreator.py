@@ -9,11 +9,10 @@ DRONES = [
     'DEVENTION DEVO',
     'DJI FPV COMBO',
     'DJI AVATA2',
-    'DJI MAVIC 3 PRO',
     'DJI MINI 3',
     'DJI MINI4 PRO',
     'FLY SKY EL 18',
-    'FLY SKY FS 16X',
+    'FLY SKY FS I6X',
     'FRSKY-X9DP2019',
     'FRSKY X14',
     'FRSKY X20R',
@@ -39,10 +38,11 @@ DRONES = [
     'YUNZHUO-H16',
     'YUNZHUO-H30'
 ]
-NUM_DRONES = 100
+NUM_DRONES = 60
 NUM_SNRS = 20
-DIALOG = 'D:/ML_Project/RF-Analysis-Agent/dialog.json'
-DATASET = 'D:/ML_Project/RF-Analysis-Agent/dataset.json'
+DIALOG = 'C:/ML/signal_agent/dialog.json'
+DATASET = 'C:/ML/signal_agent/dataset.json'
+SOURCE = 'signal agent dataset'
 
 
 def build_vqa_json(image_dir, output_json_file, user, assistant):
@@ -65,7 +65,7 @@ def build_vqa_json(image_dir, output_json_file, user, assistant):
             {
                 "user": user,
                 "assistant": assistant,
-                "source": "signal agent"
+                "source": SOURCE
             }
         ]
     }
@@ -79,9 +79,11 @@ def build_vqa_json(image_dir, output_json_file, user, assistant):
 
 
 def main():
+    
+    with open(DIALOG, 'r', encoding='utf-8') as f:
+        data = json.load(f)
 
-    data = json.load(DIALOG)
-    path = ''
+    path = 'E:/Drone_dataset/RFUAV/augmentation_exp2_allDrone/or_image/matlab/'
     for drone in DRONES:
 
         packs = os.path.join(path, drone)
@@ -89,25 +91,23 @@ def main():
         for pack in os.listdir(packs):
             imges = os.listdir(os.path.join(packs, pack))
             imgs = [os.path.join(packs, pack, i) for i in imges if i.endswith('.jpg')]
-        imgs = random.shuffle(imgs)[:NUM_DRONES]
-        for img in imgs:
+        random.shuffle(imgs)
+        for img in imgs[:NUM_DRONES]:
             build_vqa_json(img, DATASET, data[drone]['analysis_Q'], data[drone]['analysis_A'])
             build_vqa_json(img, DATASET, data[drone]['Type_Q'], data[drone]['Type_A'])
             build_vqa_json(img, DATASET, data['SNR']['High_Q'], data['SNR']['High_A'])
 
-    path = ''
+    path = 'E:/Drone_dataset/RFUAV/augmentation_exp1_MethodSelect/benchmark_or/'
     for drone in ['DJI MINI 3', 'DJI AVATA2', 'DJI FPV COMBO', 'DJI MAVIC3 PRO', 'DJI MINI4 PRO']:
 
         snrs = os.listdir(os.path.join(path, drone))
 
         for snr in snrs:
-
-            snr_level = snr[:-2]
-            if int(snr_level) > 10:
+            if int(snr[:-2]) >= 10:
                 snr_level = 'High_A'
-            elif int(snr_level) < 10 and int(snr_level) > -10:
+            elif int(snr[:-2]) < 10 and int(snr_level) > -10:
                 snr_level = 'Middle_A'
-            elif int(snr_level) < -10:
+            elif int(snr[:-2]) <= -10:
                 snr_level = 'Low_A'
             imges = os.listdir(os.path.join(path, drone, snr, 'parula', '1024'))
             imgs = [os.path.join(path, drone, snr, 'parula', '1024', i) for i in imges if i.endswith('.jpg')]
